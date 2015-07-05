@@ -1,34 +1,64 @@
 
 #define BUFFERSIZE 256
 #define VERBOSE 1
+#define PCHAR char*
 
 /*
- * friendly messages
+ *	surcharge log()
  */
-void success(wchar_t* param1) {
-	wchar_t out[BUFFERSIZE];
-	swprintf_s(out, BUFFERSIZE, TEXT("[Detour] %s (SUCCESS)"), param1);
+
+void logV(PCHAR param1, PCHAR param2) {
+	char out[BUFFERSIZE];
+	sprintf_s(out, BUFFERSIZE, "[Detour] %s(%s)", param1, param2);
 	out[BUFFERSIZE - 1] = '\0';
-	OutputDebugString(out);
+	OutputDebugStringA(out);
 }
-void failed(wchar_t* param1) {
-	wchar_t out[BUFFERSIZE];
-	swprintf_s(out, BUFFERSIZE, TEXT("[Detour] %s (FAILED)"), param1);
+
+void log(PCHAR param1, ULONG param2) {
+	char out[BUFFERSIZE];
+	sprintf_s(out, BUFFERSIZE, "[Hook] %s(%d)", param1, param2);
 	out[BUFFERSIZE - 1] = '\0';
-	OutputDebugString(out);
+	OutputDebugStringA(out);
 }
-void removed(wchar_t* param1) {
-	wchar_t out[BUFFERSIZE];
-	swprintf_s(out, BUFFERSIZE, TEXT("[Detour] %s (REMOVED)"), param1);
+
+void log(PCHAR param1, UINT param2) {
+	char out[BUFFERSIZE];
+	sprintf_s(out, BUFFERSIZE, "[Hook] %s(%d)", param1, param2);
 	out[BUFFERSIZE - 1] = '\0';
-	OutputDebugString(out);
+	OutputDebugStringA(out);
+}
+
+void log(PCHAR param1, CONST PCHAR param2) {
+	char out[BUFFERSIZE];
+	sprintf_s(out, BUFFERSIZE, "[Hook] %s(%s)", param1, param2);
+	out[BUFFERSIZE - 1] = '\0';
+	OutputDebugStringA(out);
+}
+
+void log(PCHAR param1, HINSTANCE param2, CONST PCHAR param3) {
+	char out[BUFFERSIZE];
+	sprintf_s(out, BUFFERSIZE, "[Hook] %s(%p, %s)", param1, param2, param3);
+	out[BUFFERSIZE - 1] = '\0';
+	OutputDebugStringA(out);
 }
 
 /*
- * detour main functions
- */
+* friendly messages
+*/
+void success(PCHAR param1) {
+	logV(param1, "SUCCESS");
+}
+void failed(PCHAR param1) {
+	logV(param1, "FAILED");
+}
+void removed(PCHAR param1) {
+	logV(param1, "REMOVED");
+}
 
-void detourMonitorAttach(wchar_t* func, PVOID* orig, PVOID fake) {
+/*
+* detour main functions
+*/
+void detourMonitorAttach(PCHAR func, PVOID* orig, PVOID fake) {
 	DetourRestoreAfterWith();
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
@@ -43,29 +73,11 @@ void detourMonitorAttach(wchar_t* func, PVOID* orig, PVOID fake) {
 	}
 }
 
-void detourMonitorDetach(wchar_t* func, PVOID* orig, PVOID fake) {
+void detourMonitorDetach(PCHAR func, PVOID* orig, PVOID fake) {
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 	DetourDetach(orig, fake);
 	DetourTransactionCommit();
 	if (VERBOSE)
 		removed(func);
-}
-
-/*
- *	surcharge monitor()
- */
-
-void log(wchar_t* param1, unsigned long param2) {
-	wchar_t out[BUFFERSIZE];
-	swprintf_s(out, BUFFERSIZE, TEXT("[Hook] %s(%d)"), param1, param2);
-	out[BUFFERSIZE - 1] = '\0';
-	OutputDebugString(out);
-}
-
-void log(wchar_t* param1, unsigned int param2) {
-	wchar_t out[BUFFERSIZE];
-	swprintf_s(out, BUFFERSIZE, TEXT("[Hook] %s(%d)"), param1, param2);
-	out[BUFFERSIZE - 1] = '\0';
-	OutputDebugString(out);
 }

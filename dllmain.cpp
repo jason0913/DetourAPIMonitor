@@ -12,12 +12,16 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 	(void)reserved;
 
 	if (dwReason == DLL_PROCESS_ATTACH) {
-		detourMonitorAttach(L"ExitProcess", &(PVOID&)origExitProcess, fakeExitProcess);
-		detourMonitorAttach(L"Sleep", &(PVOID&)origSleep, fakeSleep);
+		detourMonitorAttach("ExitProcess", &(PVOID&)origExitProcess, fakeExitProcess);
+		detourMonitorAttach("Sleep", &(PVOID&)origSleep, fakeSleep);
+		detourMonitorAttach("GetProcAddress", &(PVOID&)origGetProcAddress, fakeGetProcAddress);
+		detourMonitorAttach("LoadLibrary", &(PVOID&)origLoadLibraryA, fakeLoadLibraryA);
 	}
 	else if (dwReason == DLL_PROCESS_DETACH) {
-		detourMonitorDetach(L"ExitProcess", &(PVOID&)origExitProcess, fakeExitProcess);
-		detourMonitorDetach(L"Sleep", &(PVOID&)origSleep, fakeSleep);
+		detourMonitorDetach("ExitProcess", &(PVOID&)origExitProcess, fakeExitProcess);
+		detourMonitorDetach("Sleep", &(PVOID&)origSleep, fakeSleep);
+		detourMonitorDetach("GetProcAddress", &(PVOID&)origGetProcAddress, fakeGetProcAddress);
+		detourMonitorDetach("LoadLibrary", &(PVOID&)origLoadLibraryA, fakeLoadLibraryA);
 	}
 	return TRUE;
 }

@@ -4,9 +4,8 @@
 #define PCHAR char*
 
 /*
- *	surcharge log()
- */
-
+* surcharge log()
+*/
 void logV(PCHAR param1, PCHAR param2) {
 	char out[BUFFERSIZE];
 	sprintf_s(out, BUFFERSIZE, "[Detour] %s(%s)", param1, param2);
